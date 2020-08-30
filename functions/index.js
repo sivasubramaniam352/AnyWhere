@@ -1,42 +1,18 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-
-admin.initializeApp();
-
-const express = require('express');
-const app = express();
+const needsAuth = require('./middleware/Auth');
+const UserController = require('./controllers/UserController');
+const PostController = require('./controllers/PostController');
 
 
-app.get('/users', (req,res) => {
-    admin.firestore().collection('users').orderBy('createdAt','desc').get()
-    .then(docs =>{
-        let users = [];
-        docs.forEach(doc =>{
-            users.push(doc.data());
-        });
-        return res.json(users);
-    })
-    .catch(err => console.error(err))
-})
 
-app.post('/create',(req,res) => {
+const app = require('express')();
 
-    let newUser = {
-        regno: req.body.regno,
-        name:req.body.name,
-        createdAt:new Date().toISOString()
-    }
+app.post('/signup',UserController.create);
 
-    admin.firestore().collection('users').add(newUser)
-        .then(docs => {
-            res.json({message: `User ${docs.id} created successfully`});
-        })
-        .catch(err =>{
-            res.status(500).json({error:'something wet  wrong'});
-            console.error(err);
-        })
+app.post('/login',UserController.login);
 
-})
+app.post('/post',needsAuth,PostController.post)
+
 
 //https://baseurl.com/api/
 
