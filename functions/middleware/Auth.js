@@ -23,7 +23,7 @@ module.exports = (req, res, next) => {
         .get();
     })
     .then((data) => {
-      req.user.regno = data.docs[0].data().regno;
+      req.user = data.docs[0].data();
       return next();
     })
     .catch((err) => {
