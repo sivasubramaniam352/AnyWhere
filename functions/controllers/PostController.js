@@ -36,13 +36,23 @@ exports.getALL = async (req, res) => {
 
 
   if (posts.length > 0) {
-    posts.forEach(async(doc) =>{
-      let user = await db.collection("users").where('regno','==',doc.regno).get()
+    // posts.forEach(async(doc) =>{
+    //   let user = await db.collection("users").where('regno','==',doc.regno).get()
+    //   let userData = await user.docs[0].data();
+    //   let newData = {...doc,profileImage:userData.profileImage,posterName:userData.profileName};
+    //   modifiyPosts.push(newData);
+
+    // })
+    for (let i = 0; i < posts.length; i++) {
+      const element = posts[i];
+      let user = await db.collection("users").where('regno','==',element.regno).get()
       let userData = await user.docs[0].data();
-      let newData = {...doc,profileImage:userData.profileImage,posterName:userData.profileName};
+      let newData = {profileImage:userData.profileImage,posterName:userData.profileName};
       modifiyPosts.push(newData);
 
-    })
+      
+    }
+
     return res.json({ Posts: modifiyPosts });
   } else {
     return res.json({ error: "invalid process" });
